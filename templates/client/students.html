@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Student Talent - CampusGig{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2.2rem; color: var(--color-forest);">Campus Talent Directory</h1>
+    <p style="color: var(--color-text-muted);">Explore registered student freelancers, their skillsets, portfolios, and bios across all domains.</p>
+  </div>
+
+  <div class="cards-grid">
+    {% for student in students %}
+      <div class="project-card">
+        <div>
+          <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.25rem;">
+            <div class="card-avatar">
+              {{ student.name[:2].upper() }}
+            </div>
+            <div>
+              <h2 style="font-size: 1.35rem; color: var(--color-forest); margin-bottom: 0.2rem;">{{ student.name }}</h2>
+              <div style="font-size: 0.85rem; color: var(--color-text-muted);">
+                Member since {{ student.created_at.strftime('%b %Y') }}
+              </div>
+            </div>
+          </div>
+
+          {% if student.skills %}
+            <div class="card-skills" style="margin-bottom: 1rem;">
+              {% for sk in student.skills_list %}
+                <span class="skill-chip highlight">{{ sk }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% if student.bio %}
+            <p class="card-bio-quote" style="margin-bottom: 1.25rem;">
+              "{{ student.bio }}"
+            </p>
+          {% endif %}
+        </div>
+
+        <div style="border-top: 1px solid var(--color-border); padding-top: 1rem; margin-top: auto;">
+          {% if student.portfolio_url %}
+            <a href="{{ student.portfolio_url }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline" style="width: 100%; color: var(--color-forest);">
+              View Portfolio / GitHub &rarr;
+            </a>
+          {% else %}
+            <span style="font-size: 0.85rem; color: var(--color-text-muted);">Contact via gig proposals</span>
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <p style="color: var(--color-text-muted);">No student profiles available yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

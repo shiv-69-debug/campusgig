@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - CampusGig{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-card">
+    <h2 class="form-title">Welcome Back</h2>
+    <p class="form-subtitle">Sign in to manage your gigs, proposals, and projects.</p>
+
+    <form method="POST" action="{{ url_for('login') }}">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.role.label(class="form-label") }}
+        {{ form.role(class="form-control") }}
+        {% for error in form.role.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control", placeholder="you@university.edu or you@company.com") }}
+        {% for error in form.email.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control", placeholder="••••••••") }}
+        {% for error in form.password.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+        Sign In to CampusGig
+      </button>
+    </form>
+
+    <div style="margin-top: 1.75rem; text-align: center; border-top: 1px solid var(--color-border); padding-top: 1.25rem;">
+      <p style="font-size: 0.9rem; color: var(--color-text-muted);">
+        Don't have an account yet?
+      </p>
+      <div style="margin-top: 0.5rem; display: flex; gap: 0.75rem; justify-content: center;">
+        <a href="{{ url_for('register_student') }}" style="color: var(--color-forest); font-weight: 600;">Student Register &rarr;</a>
+        <span style="color: #cbd5e1;">|</span>
+        <a href="{{ url_for('register_client') }}" style="color: var(--color-orange); font-weight: 600;">Client Register &rarr;</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

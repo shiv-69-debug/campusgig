@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Projects - CampusGig{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2.4rem; color: var(--color-forest);">Explore Open Projects</h1>
+    <p style="color: var(--color-text-muted);">Find gigs matching your domain, submit proposals, and build your career portfolio.</p>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <form method="GET" action="{{ url_for('student_dashboard') }}" class="filter-bar">
+    <div class="filter-input-wrap">
+      <input type="text" name="q" value="{{ query or '' }}" class="form-control" placeholder="Search keywords (e.g. website, logo, python, writing)...">
+    </div>
+
+    <div style="min-width: 200px;">
+      <input type="text" list="common-domains-list" name="domain" value="{{ selected_domain or '' }}" class="form-control" placeholder="Domain / Category...">
+      <datalist id="common-domains-list">
+        {% for dom in domains_list %}
+          <option value="{{ dom }}">
+        {% endfor %}
+      </datalist>
+    </div>
+
+    <button type="submit" class="btn btn-lime">Filter Projects</button>
+    {% if query or selected_domain %}
+      <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline" style="color: var(--color-forest);">Reset</a>
+    {% endif %}
+  </form>
+
+  <!-- Projects Grid -->
+  <div class="cards-grid">
+    {% for project in projects %}
+      <div class="project-card">
+        <div>
+          <div class="project-card-header">
+            <span class="project-domain-tag">{{ project.domain }}</span>
+            {% if project.budget %}
+              <span class="project-budget">{{ project.budget }}</span>
+            {% endif %}
+          </div>
+          <h2 class="project-title" style="font-size: 1.35rem;">{{ project.title }}</h2>
+          <p class="project-desc">{{ project.description }}</p>
+        </div>
+
+        <div>
+          <div class="project-meta">
+            <div>
+              <strong>{{ project.client.organization or project.client.name }}</strong>
+              <div style="font-size: 0.75rem; color: #94a3b8;">Posted {{ project.created_at.strftime('%b %d, %Y') }}</div>
+            </div>
+            <span class="badge-status {{ project.status }}">{{ project.status }}</span>
+          </div>
+
+          <div style="margin-top: 1.25rem;">
+            {% if project.id in applied_project_ids %}
+              <div style="text-align: center; padding: 0.5rem; background: #E6F7ED; color: #116B3D; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.85rem;">
+                &check; Proposal Submitted
+              </div>
+            {% else %}
+              <a href="{{ url_for('project_detail', project_id=project.id) }}" class="btn btn-sm btn-primary" style="width: 100%;">
+                View Details &amp; Apply &rarr;
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; background: #fff; border-radius: var(--radius-lg); border: 1px dashed var(--color-border);">
+        <h3 style="color: var(--color-forest); margin-bottom: 0.5rem;">No projects found</h3>
+        <p style="color: var(--color-text-muted);">Try adjusting your search criteria or clearing filters.</p>
+        <a href="{{ url_for('student_dashboard') }}" class="btn btn-sm btn-lime" style="margin-top: 1rem;">View All Gigs</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

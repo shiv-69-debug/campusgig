@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Review Proposals: {{ project.title }} - CampusGig{% endblock %}
+
+{% block content %}
+<div class="container">
+  <a href="{{ url_for('client_dashboard') }}" style="display: inline-flex; align-items: center; gap: 0.35rem; color: var(--color-forest); font-weight: 600; margin-bottom: 1.5rem;">
+    &larr; Back to Client Dashboard
+  </a>
+
+  <!-- Project Summary Bar -->
+  <div class="project-card" style="margin-bottom: 2.5rem;">
+    <div class="project-card-header">
+      <span class="project-domain-tag">{{ project.domain }}</span>
+      <span class="badge-status {{ project.status }}">Status: {{ project.status }}</span>
+    </div>
+    <h1 class="project-title" style="font-size: 1.85rem; margin-top: 0.5rem;">{{ project.title }}</h1>
+    <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 0.75rem;">Budget: <strong>{{ project.budget or 'Negotiable' }}</strong></p>
+    <p style="color: var(--color-text-dark); line-height: 1.6;">{{ project.description }}</p>
+  </div>
+
+  <h2 style="font-size: 1.7rem; color: var(--color-forest); margin-bottom: 1.25rem;">
+    Applicant Proposals ({{ proposals|length }})
+  </h2>
+
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    {% for proposal in proposals %}
+      <div class="project-card" style="border-left: 5px solid {% if proposal.status == 'accepted' %}#10B981{% elif proposal.status == 'rejected' %}#EF4444{% else %}var(--color-lime){% endif %};">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <div class="card-avatar" style="width: 50px; height: 50px; font-size: 1.2rem;">
+              {{ proposal.student.name[:2].upper() }}
+            </div>
+            <div>
+              <h3 style="font-size: 1.3rem; color: var(--color-forest); margin-bottom: 0.2rem;">
+                {{ proposal.student.name }}
+              </h3>
+              <div style="font-size: 0.85rem; color: var(--color-text-muted);">
+                {{ proposal.student.email }}
+                {% if proposal.student.portfolio_url %}
+                  &bull; <a href="{{ proposal.student.portfolio_url }}" target="_blank" rel="noopener" style="color: var(--color-orange); text-decoration: underline;">Portfolio / Work &rarr;</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: right;">
+            <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-forest);">
+              Quote: {{ proposal.price }}
+            </div>
+            <div style="margin-top: 0.35rem;">
+              <span class="badge-status {{ proposal.status }}">{{ proposal.status }}</span>
+            </div>
+          </div>
+        </div>
+
+        {% if proposal.student.skills %}
+          <div class="card-skills" style="margin-bottom: 1rem;">
+            {% for sk in proposal.student.skills_list %}
+              <span class="skill-chip">{{ sk }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div style="background: var(--color-gray-100); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+          <h4 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); margin-bottom: 0.5rem;">Applicant Pitch:</h4>
+          <p style="white-space: pre-line; line-height: 1.6; color: var(--color-text-dark); font-size: 0.95rem;">
+            {{ proposal.message }}
+          </p>
+        </div>
+
+        <!-- Action Buttons: Hire (Accept) / Decline (Reject) -->
+        {% if proposal.status == 'pending' %}
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+            <form method="POST" action="{{ url_for('client_action_proposal', proposal_id=proposal.id, action_type='hire') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-lime" onclick="return confirm('Hire this student? This will mark the project as hired.');">
+                &check; Hire Student
+              </button>
+            </form>
+            <form method="POST" action="{{ url_for('client_action_proposal', proposal_id=proposal.id, action_type='decline') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-outline" style="color: #991B1B; border-color: #F87171;" onclick="return confirm('Decline this proposal?');">
+                &cross; Decline
+              </button>
+            </form>
+          </div>
+        {% elif proposal.status == 'accepted' %}
+          <div style="text-align: right; color: #047857; font-weight: 700; font-size: 0.95rem;">
+            &check; Hired on {{ proposal.created_at.strftime('%b %d, %Y') }}
+          </div>
+        {% else %}
+          <div style="text-align: right; color: #991B1B; font-size: 0.9rem;">
+            Proposal declined
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 4rem 1rem; background: #fff; border-radius: var(--radius-lg); border: 1px dashed var(--color-border);">
+        <h3 style="color: var(--color-forest); margin-bottom: 0.5rem;">No proposals yet</h3>
+        <p style="color: var(--color-text-muted);">Students will review your gig and submit pitches soon.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

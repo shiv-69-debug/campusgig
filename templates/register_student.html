@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Register as Student - CampusGig{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-card">
+    <div class="tab-switcher">
+      <a href="{{ url_for('register_student') }}" class="tab-btn active">I'm a Student Freelancer</a>
+      <a href="{{ url_for('register_client') }}" class="tab-btn">I'm a Client / Employer</a>
+    </div>
+
+    <h2 class="form-title">Join as a Student</h2>
+    <p class="form-subtitle">Create your freelance profile, showcase your skills, and bid on real gigs.</p>
+
+    <form method="POST" action="{{ url_for('register_student') }}">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control", placeholder="e.g. Alex Morgan") }}
+        {% for error in form.name.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control", placeholder="alex@campus.edu") }}
+        {% for error in form.email.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control", placeholder="Create a secure password") }}
+        {% for error in form.password.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.skills.label(class="form-label") }}
+        {{ form.skills(class="form-control", placeholder="e.g. Python, Figma, React, Copywriting, Video Editing") }}
+        <p class="form-help">Open to ANY domain: tech, design, marketing, research, audio, etc.</p>
+        {% for error in form.skills.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.portfolio_url.label(class="form-label") }}
+        {{ form.portfolio_url(class="form-control", placeholder="https://github.com/yourhandle or portfolio link") }}
+        {% for error in form.portfolio_url.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.bio.label(class="form-label") }}
+        {{ form.bio(class="form-control", rows="3", placeholder="Tell clients about your major, interests, and what you build best...") }}
+        {% for error in form.bio.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-lime" style="width: 100%; margin-top: 1rem;">
+        Complete Student Registration
+      </button>
+    </form>
+
+    <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--color-text-muted);">
+      Already have an account? <a href="{{ url_for('login') }}" style="color: var(--color-forest); font-weight: 600;">Sign in here</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

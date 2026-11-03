@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Client Profile - CampusGig{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 700px;">
+  <div class="form-card" style="max-width: 100%;">
+    <h1 class="form-title" style="text-align: left; font-size: 2rem;">Client Profile</h1>
+    <p class="form-subtitle" style="text-align: left; margin-bottom: 2rem;">Update your company or organization information.</p>
+
+    <form method="POST" action="{{ url_for('client_profile') }}">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }}
+        {% for error in form.name.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address (Read-Only)</label>
+        <input type="text" class="form-control" value="{{ client.email }}" disabled style="background: #e2e8f0; cursor: not-allowed;">
+      </div>
+
+      <div class="form-group">
+        {{ form.organization.label(class="form-label") }}
+        {{ form.organization(class="form-control", placeholder="e.g. Acme Innovations, Campus Media Club") }}
+        {% for error in form.organization.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary">Save Profile</button>
+        <a href="{{ url_for('client_dashboard') }}" class="btn btn-outline" style="color: var(--color-forest);">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

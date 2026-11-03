@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} - CampusGig{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+  <a href="{{ url_for('student_dashboard') }}" style="display: inline-flex; align-items: center; gap: 0.35rem; color: var(--color-forest); font-weight: 600; margin-bottom: 1.5rem;">
+    &larr; Back to all projects
+  </a>
+
+  <!-- Project Overview Card -->
+  <div class="project-card" style="margin-bottom: 2rem;">
+    <div class="project-card-header">
+      <span class="project-domain-tag">{{ project.domain }}</span>
+      {% if project.budget %}
+        <span class="project-budget">{{ project.budget }}</span>
+      {% endif %}
+    </div>
+
+    <h1 class="project-title" style="font-size: 2rem; margin: 0.5rem 0 1rem;">{{ project.title }}</h1>
+    
+    <div class="project-meta" style="border-top: none; padding-top: 0; margin-bottom: 1.5rem;">
+      <div>
+        <span>Posted by <strong>{{ project.client.organization or project.client.name }}</strong></span>
+        <span style="margin: 0 0.5rem;">&bull;</span>
+        <span>{{ project.created_at.strftime('%B %d, %Y') }}</span>
+      </div>
+      <span class="badge-status {{ project.status }}">{{ project.status }}</span>
+    </div>
+
+    <div style="border-top: 1px solid var(--color-border); padding-top: 1.5rem; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.15rem; color: var(--color-forest); margin-bottom: 0.75rem;">Project Description</h3>
+      <div style="white-space: pre-line; line-height: 1.7; color: var(--color-text-dark);">
+        {{ project.description }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Proposal Submission / Status -->
+  {% if existing_proposal %}
+    <div class="form-card" style="max-width: 100%; border-left: 5px solid var(--color-grape);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="color: var(--color-forest); font-size: 1.4rem;">Your Submitted Proposal</h3>
+        <span class="badge-status {{ existing_proposal.status }}">{{ existing_proposal.status }}</span>
+      </div>
+      
+      <p style="margin-bottom: 0.5rem;"><strong>Proposed Rate/Budget:</strong> {{ existing_proposal.price }}</p>
+      <div style="background: var(--color-gray-100); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+        <p style="font-size: 0.95rem; white-space: pre-line;">{{ existing_proposal.message }}</p>
+      </div>
+      <small style="color: var(--color-text-muted);">Submitted on {{ existing_proposal.created_at.strftime('%B %d, %Y at %H:%M') }}</small>
+    </div>
+  {% elif project.status != 'open' %}
+    <div class="alert alert-warning">
+      This project is marked as <strong>{{ project.status }}</strong> and is no longer accepting new proposals.
+    </div>
+  {% elif session.get('role') == 'student' %}
+    <div class="form-card" style="max-width: 100%;">
+      <h3 class="form-title" style="text-align: left; font-size: 1.6rem;">Submit Your Proposal</h3>
+      <p class="form-subtitle" style="text-align: left; margin-bottom: 1.5rem;">Stand out with specific domain experience, portfolio examples, and realistic timelines.</p>
+
+      <form method="POST" action="{{ url_for('project_detail', project_id=project.id) }}">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          {{ form.price.label(class="form-label") }}
+          {{ form.price(class="form-control", placeholder="e.g. ₹8,000 total or ₹600/hr") }}
+          {% for error in form.price.errors %}
+            <div class="form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.message.label(class="form-label") }}
+          {{ form.message(class="form-control", rows="5", placeholder="Describe how you will solve this project, similar work you have completed, and any questions...") }}
+          {% for error in form.message.errors %}
+            <div class="form-error">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg">Submit Proposal Now</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      Please <a href="{{ url_for('login') }}"><strong>sign in as a student</strong></a> to submit a proposal for this gig.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

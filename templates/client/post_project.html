@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Post a Project - CampusGig{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+  <div class="form-card" style="max-width: 100%;">
+    <h1 class="form-title" style="text-align: left; font-size: 2rem;">Post a Project</h1>
+    <p class="form-subtitle" style="text-align: left; margin-bottom: 2rem;">Reach student specialists across any technical, creative, or business domain.</p>
+
+    <form method="POST" action="{{ url_for('client_post_project') }}">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control", placeholder="e.g. Build an Interactive Analytics Dashboard in Flask") }}
+        {% for error in form.title.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.domain.label(class="form-label") }}
+        <input type="text" list="common-domains-list" name="domain" id="domain" class="form-control" value="{{ form.domain.data or '' }}" placeholder="Type any domain or choose a suggested one (e.g. AI, UI Design, Content, Biotech)">
+        <datalist id="common-domains-list">
+          {% for dom in domains_list %}
+            <option value="{{ dom }}">
+          {% endfor %}
+        </datalist>
+        <p class="form-help">Open to ANY field! Feel free to enter your custom domain.</p>
+        {% for error in form.domain.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.budget.label(class="form-label") }}
+        {{ form.budget(class="form-control", placeholder="e.g. ₹15,000 fixed or ₹500/hr or Negotiable") }}
+        {% for error in form.budget.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control", rows="6", placeholder="Provide project scope, required skills, expected milestones, and deadline expectations...") }}
+        {% for error in form.description.errors %}
+          <div class="form-error">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary btn-lg">Publish Project</button>
+        <a href="{{ url_for('client_dashboard') }}" class="btn btn-outline" style="color: var(--color-forest);">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

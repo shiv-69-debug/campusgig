@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CampusGig - The Student Freelancing Network{% endblock %}</title>
+  
+  <!-- Google Fonts: Abril Fatface & DM Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="brand-logo">
+        Campus<span class="gig" style="color: var(--color-orange);">Gig</span><span class="dot">.</span>
+        <span class="brand-badge">Student Work</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="{{ url_for('home') }}" class="nav-link">Explore Gigs</a>
+        
+        {% if session.get('user_id') %}
+          {% if session.get('role') == 'student' %}
+            <a href="{{ url_for('student_dashboard') }}" class="nav-link">Browse Projects</a>
+            <a href="{{ url_for('student_applications') }}" class="nav-link">My Applications</a>
+            <a href="{{ url_for('student_profile') }}" class="nav-link">My Profile</a>
+          {% elif session.get('role') == 'client' %}
+            <a href="{{ url_for('client_dashboard') }}" class="nav-link">Client Dashboard</a>
+            <a href="{{ url_for('client_post_project') }}" class="nav-link">Post a Project</a>
+            <a href="{{ url_for('client_students') }}" class="nav-link">Browse Talent</a>
+            <a href="{{ url_for('client_profile') }}" class="nav-link">Profile</a>
+          {% endif %}
+          
+          <div class="user-badge">
+            <span>{{ session.get('user_name', 'User') }}</span>
+            <span class="user-role-tag">{{ session.get('role') }}</span>
+          </div>
+          <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-white">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="nav-link">Sign In</a>
+          <a href="{{ url_for('register_student') }}" class="btn btn-sm btn-lime">Join as Student</a>
+          <a href="{{ url_for('register_client') }}" class="btn btn-sm btn-primary">Hire Students</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <span>{{ message }}</span>
+            <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; font-size: 1.1rem; cursor: pointer; color: inherit;">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content Block -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div>
+        <div class="brand-logo" style="font-size: 1.5rem; margin-bottom: 0.4rem;">
+          Campus<span style="color: var(--color-orange);">Gig</span><span class="dot">.</span>
+        </div>
+        <p>Connecting campus talent with ambitious businesses, startups, and mentors across every domain.</p>
+      </div>
+      <div>
+        <p>&copy; 2026 CampusGig Platform. Open to every skill, field, and craft.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/intro.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

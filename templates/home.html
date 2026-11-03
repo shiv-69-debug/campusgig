@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}CampusGig - Student Freelancing Platform{% endblock %}
+
+{% block content %}
+<!-- Intro Wordmark Overlay Animation -->
+<div id="intro-overlay">
+  <div class="intro-wordmark">
+    Campus<span class="gig">Gig</span>.
+  </div>
+  <div class="intro-subtitle">Student Skills. Real Projects. Paid Experience.</div>
+</div>
+
+<!-- Hero Section with Profile Card in front of Headline -->
+<section class="hero">
+  <div class="hero-grid">
+    <div class="hero-text-col">
+      <h1 class="hero-headline">
+        Hire hungry <span class="highlight">campus talent</span> before anyone else does.
+      </h1>
+      <p class="hero-tagline">
+        The open freelancing exchange bridging energetic college students with founders, agencies, and businesses across any domain.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ url_for('register_student') }}" class="btn btn-lg btn-lime">Find Paid Gigs</a>
+        <a href="{{ url_for('register_client') }}" class="btn btn-lg btn-primary">Post a Project</a>
+        <a href="{{ url_for('student_dashboard') }}" class="btn btn-lg btn-outline-white">Explore All Work</a>
+      </div>
+    </div>
+
+    <!-- Floating Profile Card in Front of Headline -->
+    <div class="hero-card-wrapper">
+      <div class="profile-hero-card">
+        <div class="card-top-badge">Top Student Pick</div>
+        <div class="card-user-info">
+          <div class="card-avatar">RP</div>
+          <div>
+            <div class="card-user-name">Rohan Patel</div>
+            <div class="card-user-role">Full-Stack Dev &amp; ML Minor &bull; Stanford '27</div>
+          </div>
+        </div>
+        
+        <div class="card-skills">
+          <span class="skill-chip highlight">Python / Flask</span>
+          <span class="skill-chip highlight">React</span>
+          <span class="skill-chip">UI Prototyping</span>
+          <span class="skill-chip">FastAPI</span>
+        </div>
+
+        <p class="card-bio-quote">
+          "Shipped 4 production features for startups while acing finals. Ready to build your MVP this weekend."
+        </p>
+
+        <div class="card-stats">
+          <div>
+            <span class="card-stat-label">Response:</span>
+            <span class="card-stat-val">&lt; 2 hrs</span>
+          </div>
+          <div>
+            <span class="card-stat-label">Projects Completed:</span>
+            <span class="card-stat-val">12</span>
+          </div>
+          <div>
+            <span class="card-stat-label">Rating:</span>
+            <span class="card-stat-val">&starf; 4.98</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Domain Marquee -->
+<div class="marquee-container" aria-hidden="true">
+  <div class="marquee-content">
+    <span class="marquee-item"><span class="spark">&curren;</span> Web Development</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> UI/UX Design</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Machine Learning &amp; AI</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Content Strategy</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Mobile App Engineering</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Motion Graphics</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> SEO &amp; Growth</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Cloud Infrastructure</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Academic Research</span>
+  </div>
+  <div class="marquee-content" aria-hidden="true">
+    <span class="marquee-item"><span class="spark">&curren;</span> Web Development</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> UI/UX Design</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Machine Learning &amp; AI</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Content Strategy</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Mobile App Engineering</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Motion Graphics</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> SEO &amp; Growth</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Cloud Infrastructure</span>
+    <span class="marquee-item"><span class="spark">&curren;</span> Academic Research</span>
+  </div>
+</div>
+
+<!-- Featured Projects Section -->
+<section class="container">
+  <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h2 style="font-size: 2.2rem; color: var(--color-forest);">Fresh Campus Gigs</h2>
+      <p style="color: var(--color-text-muted);">Real projects posted by founders, labs, and companies seeking skilled students.</p>
+    </div>
+    <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline" style="color: var(--color-forest);">View All Projects &rarr;</a>
+  </div>
+
+  <div class="cards-grid">
+    {% for project in projects %}
+      <div class="project-card">
+        <div>
+          <div class="project-card-header">
+            <span class="project-domain-tag">{{ project.domain }}</span>
+            {% if project.budget %}
+              <span class="project-budget">{{ project.budget }}</span>
+            {% endif %}
+          </div>
+          <h3 class="project-title">{{ project.title }}</h3>
+          <p class="project-desc">{{ project.description[:140] }}{% if project.description|length > 140 %}...{% endif %}</p>
+        </div>
+
+        <div>
+          <div class="project-meta">
+            <span>Posted by <strong>{{ project.client.organization or project.client.name }}</strong></span>
+            <span class="badge-status {{ project.status }}">{{ project.status }}</span>
+          </div>
+          <div style="margin-top: 1.25rem;">
+            {% if session.get('role') == 'student' %}
+              <a href="{{ url_for('project_detail', project_id=project.id) }}" class="btn btn-sm btn-primary" style="width: 100%;">Apply Now</a>
+            {% else %}
+              <a href="{{ url_for('project_detail', project_id=project.id) }}" class="btn btn-sm btn-forest" style="width: 100%;">View Details</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p style="color: var(--color-text-muted);">No open gigs right now. Check back shortly!</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
