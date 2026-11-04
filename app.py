@@ -23,15 +23,25 @@ def create_app():
     # Secret Key for CSRF & Sessions
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'campusgig-default-dev-secret-key-39182')
 
-    # Database Configuration (MySQL / fallback support)
+    # Database Configuration:
+    # 1. If DATABASE_URL is provided in environment, use it
+    # 2. If running on Render or production environment without MySQL host, use sqlite:///campusgig.db
+    # 3. Otherwise try local MySQL
     database_url = os.getenv('DATABASE_URL')
     if not database_url:
-        db_user = os.getenv('DB_USER', 'root')
-        db_pass = os.getenv('DB_PASSWORD', '')
-        db_host = os.getenv('DB_HOST', 'localhost')
-        db_port = os.getenv('DB_PORT', '3306')
-        db_name = os.getenv('DB_NAME', 'campusgig')
-        database_url = f"mysql+pymysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+        if os.getenv('RENDER') or os.getenv('FLASK_ENV') == 'production':
+            database_url = 'sqlite:///campusgig.db'
+        else:
+            db_user = os.getenv('DB_USER', 'root')
+            db_pass = os.getenv('DB_PASSWORD', '')
+            db_host = os.getenv('DB_HOST', 'localhost')
+            db_port = os.getenv('DB_PORT', '3306')
+            db_name = os.getenv('DB_NAME', 'campusgig')
+            database_url = f"mysql+pymysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+
+    # Handle postgres:// legacy prefix if user uses Render PostgreSQL
+    if database_url and database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -39,6 +49,16 @@ def create_app():
     # Initialize extensions
     csrf = CSRFProtect(app)
     db.init_app(app)
+
+    # Auto-create tables and populate initial seed data if empty
+    with app.app_context():
+        try:
+            db.create_all()
+            if Project.query.count() == 0:
+                from seed_data import populate_seed_data
+                populate_seed_data()
+        except Exception as e:
+            app.logger.warning(f"Database auto-setup: {e}")
 
     return app, csrf
 
